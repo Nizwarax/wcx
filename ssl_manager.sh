@@ -41,29 +41,13 @@ display_header() {
     echo -e "${NC}"
 }
 
-# Membaca file akun.txt
-if [ -f akun.txt ]; then
-    source akun.txt
-else
-    echo -e "${RED}File akun.txt tidak ditemukan!${NC}"
-    log_activity "Error: File akun.txt tidak ditemukan"
-    exit 1
-fi
-
-# Pastikan variabel dari akun.txt terdefinisi
+# Pastikan variabel dari lingkungan terdefinisi
 if [[ -z "$AUTH_EMAIL" || -z "$AUTH_KEY" || -z "$ZONE_ID" ]]; then
-    echo -e "${RED}Variabel AUTH_EMAIL, AUTH_KEY, atau ZONE_ID tidak ditemukan di akun.txt!${NC}"
+    echo -e "${RED}Variabel AUTH_EMAIL, AUTH_KEY, atau ZONE_ID tidak ditemukan di lingkungan!${NC}"
+    echo -e "${RED}Pastikan sebuah akun telah dipilih di menu utama.${NC}"
     log_activity "Error: Variabel AUTH_EMAIL, AUTH_KEY, atau ZONE_ID tidak ditemukan"
     exit 1
 fi
-
-# Fungsi untuk backup konfigurasi
-backup_config() {
-    mkdir -p "$BACKUP_DIR"
-    local timestamp=$(date '+%Y%m%d_%H%M%S')
-    cp "akun.txt" "$BACKUP_DIR/akun_$timestamp.txt" 2>/dev/null
-    log_activity "Membuat backup: akun_$timestamp.txt"
-}
 
 # Fungsi untuk membersihkan file sementara
 cleanup_temp_files() {

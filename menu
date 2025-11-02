@@ -9,6 +9,57 @@ RED='\033[1;31m'
 MAGENTA='\033[1;35m'
 NC='\033[0m' # No Color
 
+ACCOUNTS_FILE="accounts.json"
+
+# Fungsi untuk memastikan jq terinstal
+ensure_jq() {
+    if ! command -v jq &> /dev/null; then
+        echo -e "${RED}'jq' tidak ditemukan. Menginstal...${NC}"
+        # Tambahkan perintah instalasi untuk distro yang berbeda jika diperlukan
+        if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y jq
+        elif command -v yum &> /dev/null; then
+            sudo yum install -y jq
+        else
+            echo -e "${RED}Tidak dapat menginstal jq secara otomatis. Harap instal secara manual.${NC}"
+            exit 1
+        fi
+    fi
+}
+
+# Fungsi untuk memilih akun
+select_account() {
+    display_header
+    echo -e "${CYAN}Pilih akun Cloudflare yang ingin Anda gunakan:${NC}"
+
+    # Periksa apakah file akun ada dan tidak kosong
+    if [ ! -s "$ACCOUNTS_FILE" ]; then
+        echo -e "${RED}Tidak ada akun yang ditemukan. Harap tambahkan akun terlebih dahulu.${NC}"
+        echo -e "${YELLOW}Menjalankan manajer akun...${NC}"
+        sleep 2
+        bash akun.sh
+        # Coba lagi setelah menjalankan manajer akun
+        select_account
+        return
+    fi
+
+    # Baca dan tampilkan akun
+    jq -r '.[] | .name' "$ACCOUNTS_FILE" | cat -n
+
+    read -p "Masukkan nomor akun: " account_num
+    account_index=$((account_num - 1))
+
+    # Ekspor detail akun yang dipilih
+    export AUTH_EMAIL=$(jq -r ".[$account_index].email" "$ACCOUNTS_FILE")
+    export AUTH_KEY=$(jq -r ".[$account_index].api_key" "$ACCOUNTS_FILE")
+    export ACCOUNT_ID=$(jq -r ".[$account_index].account_id" "$ACCOUNTS_FILE")
+    export ZONE_ID=$(jq -r ".[$account_index].zone_id" "$ACCOUNTS_FILE")
+
+    local selected_name=$(jq -r ".[$account_index].name" "$ACCOUNTS_FILE")
+    echo -e "${GREEN}Akun '$selected_name' dipilih.${NC}"
+    sleep 1
+}
+
 # Fungsi untuk menampilkan header
 display_header() {
   clear
@@ -35,6 +86,13 @@ show_loading() {
   clear
 }
 
+# Inisialisasi
+ensure_jq
+if [ ! -f "$ACCOUNTS_FILE" ]; then
+    echo "[]" > "$ACCOUNTS_FILE"
+fi
+select_account
+
 # Menu utama
 while true; do
   display_header
@@ -46,11 +104,12 @@ while true; do
   echo -e "${CYAN}║${NC} ${YELLOW}2. ${ORANGE}🔒  Kelola SSL${NC}                              ${CYAN}║${NC}"
   echo -e "${CYAN}║${NC} ${YELLOW}3. ${ORANGE}🌐  Kelola Domain${NC}                           ${CYAN}║${NC}"
   echo -e "${CYAN}║${NC} ${YELLOW}4. ${ORANGE}⚙️  Cek API${NC}                                  ${CYAN}║${NC}"
+  echo -e "${CYAN}║${NC} ${YELLOW}5. ${ORANGE}🔄  Ganti Akun${NC}                              ${CYAN}║${NC}"
   echo -e "${CYAN}║${NC} ${YELLOW}0. ${RED}🚪  Keluar${NC}                                  ${CYAN}║${NC}"
   echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
   
   echo -e "\n${CYAN}▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬${NC}"
-  read -p " Pilih opsi [1-4/0]: " pilihan
+  read -p " Pilih opsi [1-5/0]: " pilihan
 
   case $pilihan in
     1)
@@ -69,10 +128,14 @@ while true; do
       show_loading
       bash cek_api.sh
       ;;
+    5)
+      show_loading
+      select_account
+      ;;
     0)
       echo -e "\n${RED}▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄${NC}"
       echo -e "${RED}           T E R I M A   K A S I H          ${NC}"
-      echo -e "${RED}▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀${NC}"
+      echo -e "${RED}▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀${NC}"
       sleep 1
       exit 0
       ;;
