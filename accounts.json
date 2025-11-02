@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Contoh Akun",
+    "email": "user@example.com",
+    "api_key": "GANTI_DENGAN_API_KEY_ANDA",
+    "account_id": "GANTI_DENGAN_ACCOUNT_ID_ANDA",
+    "zone_id": "GANTI_DENGAN_ZONE_ID_ANDA"
+  }
+]

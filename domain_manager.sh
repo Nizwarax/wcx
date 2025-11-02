@@ -66,7 +66,6 @@ cleanup_temp_files() {
 }
 
 # File konfigurasi
-AKUN_FILE="akun.txt"
 DOMAIN_FILE="domain.txt"
 CONFIG_FILE="config.ini"
 
@@ -81,19 +80,9 @@ else
     log_activity "Membuat file konfigurasi default: $CONFIG_FILE"
 fi
 
-# Cek apakah file akun.txt ada
-if [ ! -f "$AKUN_FILE" ]; then
-    echo -e "${RED}File $AKUN_FILE tidak ditemukan!${NC}"
-    log_activity "Error: File $AKUN_FILE tidak ditemukan"
-    exit 1
-fi
-
-# Membaca konfigurasi dari akun.txt
-source "$AKUN_FILE"
-
 # Validasi konfigurasi
-if [ -z "$AUTH_EMAIL" ] || [ -z "$AUTH_KEY" ] || [ -z "$ACCOUNT_ID" ] || [ -z "$YOUR_NAME" ] || [ -z "$ZONE_ID" ]; then
-    echo -e "${RED}Konfigurasi API Cloudflare tidak lengkap. Pastikan file akun.txt berisi semua informasi.${NC}"
+if [ -z "$AUTH_EMAIL" ] || [ -z "$AUTH_KEY" ] || [ -z "$ACCOUNT_ID" ] || [ -z "$ZONE_ID" ]; then
+    echo -e "${RED}Konfigurasi API Cloudflare tidak lengkap. Pastikan sebuah akun telah dipilih di menu utama.${NC}"
     log_activity "Error: Konfigurasi API Cloudflare tidak lengkap"
     exit 1
 fi

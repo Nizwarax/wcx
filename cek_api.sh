@@ -22,17 +22,10 @@ printf "║ %-20s:${BWHITE}%-28s${BCYAN}║\n" "Waktu" "$(date '+%H:%M:%S')"
     echo -e "${NC}"
 }
 
-# Membaca file akun.txt
-if [ -f akun.txt ]; then
-  source akun.txt
-else
-  echo -e "${RED}File akun.txt tidak ditemukan!${NC}"
-  exit 1
-fi
-
-# Memastikan variabel utama dari akun.txt
+# Memastikan variabel utama dari lingkungan
 if [[ -z "$AUTH_EMAIL" || -z "$AUTH_KEY" ]]; then
-  echo -e "${RED}Variabel AUTH_EMAIL atau AUTH_KEY tidak ditemukan di akun.txt!${NC}"
+  echo -e "${RED}Variabel AUTH_EMAIL atau AUTH_KEY tidak ditemukan di lingkungan!${NC}"
+  echo -e "${RED}Pastikan sebuah akun telah dipilih di menu utama.${NC}"
   exit 1
 fi
 
