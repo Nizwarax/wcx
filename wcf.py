@@ -37,7 +37,7 @@ def main():
     # Clone repositori ke direktori tujuan
     print(f"Mengunduh repositori ke {TARGET_DIR}...")
     try:
-        subprocess.run(['git', 'clone', 'https://github.com/nadiavpn/wcx.git', TARGET_DIR], check=True)
+        subprocess.run(['git', 'clone', 'https://github.com/Nizwarax/wcx.git', TARGET_DIR], check=True)
     except subprocess.CalledProcessError:
         print("Gagal mengunduh repositori. Pastikan URL benar dan koneksi internet stabil.")
         exit(1)
