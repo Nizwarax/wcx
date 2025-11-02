@@ -6,7 +6,7 @@ import urllib.request
 def download_self():
     """Mengunduh wcf.py ke /usr/bin/ jika belum ada."""
     target_path = "/usr/bin/wcf.py"
-    url = "https://raw.githubusercontent.com/nadiavpn/wcx/main/wcf.py"
+    url = "https://raw.githubusercontent.com/Nizwarax/wcx/main/wcf.py"
     
     if not os.path.exists(target_path):
         print(f"Mengunduh wcf.py ke {target_path}...")
